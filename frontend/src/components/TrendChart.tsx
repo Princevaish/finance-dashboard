@@ -19,6 +19,7 @@ import {
   type ChartOptions,
 } from "chart.js";
 
+// Register required components
 ChartJS.register(
   CategoryScale,
   LinearScale,
@@ -45,28 +46,29 @@ interface TrendChartProps {
 }
 
 export default function TrendChart({ trends }: TrendChartProps) {
-  const canvasRef = useRef<HTMLCanvasElement>(null);
-  const chartRef = useRef<ChartJS | null>(null);
+  const canvasRef = useRef<HTMLCanvasElement | null>(null);
+  const chartRef = useRef<ChartJS<"bar" | "line"> | null>(null);
 
   useEffect(() => {
     if (!canvasRef.current || trends.length === 0) return;
 
-    // Destroy previous instance before creating a new one
+    // Destroy previous chart instance
     if (chartRef.current) {
       chartRef.current.destroy();
       chartRef.current = null;
     }
 
     const labels = trends.map((t) => t.month);
-    const incomes = trends.map((t) => parseFloat(t.income));
-    const expenses = trends.map((t) => parseFloat(t.expense));
-    const nets = trends.map((t) => parseFloat(t.net));
+    const incomes = trends.map((t) => Number(t.income));
+    const expenses = trends.map((t) => Number(t.expense));
+    const nets = trends.map((t) => Number(t.net));
 
-    const data: ChartData = {
+    // ✅ FIXED: Proper mixed chart typing
+    const data: ChartData<"bar" | "line"> = {
       labels,
       datasets: [
         {
-          type: "bar" as const,
+          type: "bar",
           label: "Income",
           data: incomes,
           backgroundColor: "rgba(34,197,94,0.7)",
@@ -76,7 +78,7 @@ export default function TrendChart({ trends }: TrendChartProps) {
           order: 2,
         },
         {
-          type: "bar" as const,
+          type: "bar",
           label: "Expense",
           data: expenses,
           backgroundColor: "rgba(239,68,68,0.7)",
@@ -86,7 +88,7 @@ export default function TrendChart({ trends }: TrendChartProps) {
           order: 2,
         },
         {
-          type: "line" as const,
+          type: "line",
           label: "Net",
           data: nets,
           borderColor: "rgba(59,130,246,1)",
@@ -102,7 +104,8 @@ export default function TrendChart({ trends }: TrendChartProps) {
       ],
     };
 
-    const options: ChartOptions = {
+    // ✅ FIXED: Proper generic typing
+    const options: ChartOptions<"bar" | "line"> = {
       responsive: true,
       maintainAspectRatio: false,
       interaction: { mode: "index", intersect: false },
@@ -128,7 +131,10 @@ export default function TrendChart({ trends }: TrendChartProps) {
       scales: {
         x: {
           grid: { display: false },
-          ticks: { font: { size: 11 }, color: "#6b7280" },
+          ticks: {
+            font: { size: 11 },
+            color: "#6b7280",
+          },
         },
         y: {
           grid: { color: "rgba(0,0,0,0.05)" },
@@ -140,13 +146,14 @@ export default function TrendChart({ trends }: TrendChartProps) {
           },
         },
       },
-    } as const satisfies ChartOptions;
+    };
 
-    const config = {
-      type: "bar" as const,
+    // ✅ FINAL: Clean config
+    const config: ChartConfiguration<"bar" | "line"> = {
+      type: "bar",
       data,
       options,
-    } satisfies ChartConfiguration<"bar">;
+    };
 
     chartRef.current = new ChartJS(canvasRef.current, config);
 
