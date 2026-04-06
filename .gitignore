@@ -1,0 +1,31 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Virtual Env
+.venv/
+venv/
+
+# Environment variables
+.env
+
+# Alembic cache
+alembic/versions/__pycache__/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# Node (frontend)
+node_modules/
+.next/
+out/
+
+# Build
+dist/
+build/
