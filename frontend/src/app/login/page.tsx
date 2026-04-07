@@ -6,6 +6,8 @@ import Link from "next/link";
 import axios from "axios";
 import { setToken, getToken } from "@/lib/auth";
 
+export const dynamic = "force-dynamic";
+
 interface LoginResponse { access_token: string; token_type: string }
 
 const ROLE_LABELS: Record<string, string> = {
