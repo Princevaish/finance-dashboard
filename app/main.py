@@ -50,7 +50,7 @@ from fastapi.middleware.cors import CORSMiddleware
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["http://localhost:3000","https://finance-dashboard-ten-puce.vercel.app","https://finance-dashboard-pquhjo6rv-princevaishs-projects.vercel.app"],
-    allow_credentials=True,
+    allow_credentials=False,
     allow_methods=["*"],
     allow_headers=["*"],
 )
