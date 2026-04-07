@@ -2,11 +2,10 @@ import logging
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import Response
 
 # ── CRITICAL: must be first import before any DB/ORM usage ──────────────────
-# This registers all models with SQLAlchemy's mapper registry.
-# Without this, relationship() string references like "FinancialRecord"
-# cannot be resolved and the mapper explodes on first query.
 from app.db import base  # noqa: F401
 
 from app.api.v1.router import api_router
@@ -45,14 +44,25 @@ app = FastAPI(
     lifespan=lifespan,
 )
 
-from fastapi.middleware.cors import CORSMiddleware
+# ✅ CORS CONFIG (FIXED)
+origins = [
+    "http://localhost:3000",
+    "https://finance-dashboard-ten-puce.vercel.app",
+    "https://finance-dashboard-pquhjo6rv-princevaishs-projects.vercel.app",
+]
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000","https://finance-dashboard-ten-puce.vercel.app","https://finance-dashboard-pquhjo6rv-princevaishs-projects.vercel.app"],
-    allow_credentials=False,
-    allow_methods=["*"],
+    allow_origins=origins,
+    allow_credentials=False,  # JWT → no cookies → keep False
+    allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allow_headers=["*"],
 )
 
+# ✅ CRITICAL: HANDLE PREFLIGHT REQUESTS
+@app.options("/{full_path:path}")
+async def preflight_handler(full_path: str):
+    return Response(status_code=200)
+
+# ✅ ROUTES (KEEP LAST)
 app.include_router(api_router, prefix=settings.API_V1_STR)
