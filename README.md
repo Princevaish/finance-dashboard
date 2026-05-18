@@ -596,7 +596,7 @@ Full Stack Developer | Backend-Focused Engineer | AI Enthusiast
 
 ### Connect With Me
 
-- LinkedIn: https://linkedin.com/in/your-profile
+- LinkedIn: https://www.linkedin.com/in/prince-vaish-43a40636a/
 - GitHub: https://github.com/your-username
 - Portfolio: https://your-portfolio.com
 
